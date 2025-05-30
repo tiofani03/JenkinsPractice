@@ -4,8 +4,8 @@ pipeline {
   environment {
     ANDROID_HOME = "${HOME}/Library/Android/sdk"
     PATH = "${env.PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator:/opt/homebrew/bin:/usr/local/bin"
-    FIREBASE_TOKEN = credentials('firebase-token')
-    FIREBASE_APP_ID = credentials('firebase-app-id')
+    FIREBASE_TOKEN = credentials('FIREBASE_TOKEN')
+    FIREBASE_APP_ID = credentials('FIREBASE_APP_ID')
   }
 
   parameters {
