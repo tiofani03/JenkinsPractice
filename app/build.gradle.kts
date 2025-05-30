@@ -101,13 +101,12 @@ tasks.register<Exec>("generateBaselineProfileWithArgs") {
 
 
 
-tasks.register("baselineProfileAndBundle") {
+tasks.register("generateBaselineProfile") {
   group = "build"
   description = "Delete old baseline profile, generate a new one with args, then build AAB"
 
   dependsOn("cleanBaselineProfile")
   dependsOn("generateBaselineProfileWithArgs")
-  dependsOn(":app:bundleRelease")
 
   doFirst {
     println("🔄 Starting full flow: Clean → Generate Baseline → Build AAB")
