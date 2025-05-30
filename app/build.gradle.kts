@@ -67,7 +67,6 @@ dependencies {
 tasks.register<Delete>("cleanBaselineProfile") {
   val baselineFile = file("src/release/generated/baselineProfiles/baseline-prof.txt")
   val startupFile = file("src/release/generated/baselineProfiles/startup-prof.txt")
-
   delete(baselineFile, startupFile)
 
   doFirst {
@@ -75,7 +74,7 @@ tasks.register<Delete>("cleanBaselineProfile") {
   }
 }
 
-tasks.register("generateBaselineProfile") {
+tasks.register("generateBaselineProfileFull") {
   group = "build"
   description = "Clean baseline profile files and generate new baseline profile"
 
