@@ -4,6 +4,8 @@ pipeline {
   environment {
     ANDROID_HOME = "${HOME}/Library/Android/sdk"
     PATH = "${env.PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator:/opt/homebrew/bin:/usr/local/bin"
+    FIREBASE_TOKEN = credentials('firebase-token')
+    FIREBASE_APP_ID = credentials('firebase-app-id')
   }
 
   parameters {
@@ -11,6 +13,7 @@ pipeline {
     choice(name: 'ANDROID_TYPE', choices: ['APK', 'AAB'], description: 'Build output type')
     booleanParam(name: 'GENERATE_BASELINE_PROFILE', defaultValue: false, description: 'Generate Baseline Profile?')
     string(name: 'RELEASE_NOTES', defaultValue: 'Release notes here', description: 'Release notes text')
+    string(name: 'FIREBASE_GROUPS', defaultValue: 'beta-testers', description: 'Firebase distribution groups')
   }
 
   stages {
@@ -69,7 +72,7 @@ pipeline {
               if firebase appdistribution:distribute "${outputPath}" \\
                 --app "$FIREBASE_APP_ID" \\
                 --token "$FIREBASE_TOKEN" \\
-                --groups "$FIREBASE_GROUPS" \\
+                --groups "${params.FIREBASE_GROUPS}" \\
                 --release-notes-file release-notes.txt; then
                 echo "Upload success"
               else
