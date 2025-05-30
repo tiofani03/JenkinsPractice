@@ -72,53 +72,16 @@ tasks.register<Delete>("cleanBaselineProfile") {
 
   doFirst {
     println("🧹 Cleaning old baseline profile files...")
-    println("Before delete: baseline-prof.txt exists? ${baselineFile.exists()}")
-    println("Before delete: startup-prof.txt exists? ${startupFile.exists()}")
-    println("Path: ${baselineFile.absolutePath}")
-  }
-
-  doLast {
-    println("After delete: baseline-prof.txt exists? ${baselineFile.exists()}")
-    println("After delete: startup-prof.txt exists? ${startupFile.exists()}")
   }
 }
-
-
-
-tasks.register<Exec>("generateBaselineProfileWithArgs") {
-  commandLine("./gradlew", ":app:generateBaselineProfile", "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile")
-
-  workingDir = rootProject.projectDir
-
-  doFirst {
-    println("🚀 Generating baseline profile via Exec...")
-  }
-
-  doLast {
-    println("✅ Baseline profile generated.")
-  }
-}
-
-
 
 tasks.register("generateBaselineProfile") {
   group = "build"
   description = "Clean baseline profile files and generate new baseline profile"
 
-  dependsOn("cleanBaselineProfile")
+  dependsOn("cleanBaselineProfile", ":app:generateBaselineProfile")
 
   doLast {
-    println("🚀 Generating baseline profile with arguments...")
-
-    exec {
-      commandLine(
-        "./gradlew",
-        ":app:generateBaselineProfile",
-        "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile"
-      )
-      workingDir = rootProject.projectDir
-    }
-
     println("✅ Baseline profile generated.")
   }
 }
