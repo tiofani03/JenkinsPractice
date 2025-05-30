@@ -27,13 +27,26 @@ pipeline {
       }
     }
 
-    stage('Generate Baseline Profile') {
+    stage('Baseline Profile') {
       when {
         expression { params.GENERATE_BASELINE_PROFILE }
       }
       steps {
-        echo "Generating baseline profile"
-        sh './gradlew generateBaselineProfileFull'
+        echo "Starting emulator..."
+        sh '''
+          nohup emulator -avd Pixel_6_API_34 -no-snapshot -no-boot-anim -no-audio -no-window > emulator.log 2>&1 &
+          adb wait-for-device
+          echo "Waiting for boot completion..."
+          boot_completed=""
+          until [ "$boot_completed" = "1" ]; do
+            sleep 5
+            boot_completed=$(adb shell getprop sys.boot_completed | tr -d '\r')
+            echo "Boot completed? $boot_completed"
+          done
+        '''
+
+        echo "Generating Baseline Profile..."
+        sh './gradlew --daemon generateBaselineProfileFull'
       }
     }
 
