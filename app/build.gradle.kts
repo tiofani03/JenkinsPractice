@@ -103,16 +103,22 @@ tasks.register<Exec>("generateBaselineProfileWithArgs") {
 
 tasks.register("generateBaselineProfile") {
   group = "build"
-  description = "Delete old baseline profile, generate a new one with args, then build AAB"
+  description = "Clean baseline profile files and generate new baseline profile"
 
   dependsOn("cleanBaselineProfile")
-  dependsOn("generateBaselineProfileWithArgs")
-
-  doFirst {
-    println("🔄 Starting full flow: Clean → Generate Baseline → Build AAB")
-  }
 
   doLast {
-    println("🎉 AAB built successfully after baseline profile generation!")
+    println("🚀 Generating baseline profile with arguments...")
+
+    exec {
+      commandLine(
+        "./gradlew",
+        ":app:generateBaselineProfile",
+        "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile"
+      )
+      workingDir = rootProject.projectDir
+    }
+
+    println("✅ Baseline profile generated.")
   }
 }
