@@ -32,15 +32,44 @@ pipeline {
       steps {
         echo "Starting Android emulator for baseline profile..."
         sh '''
+          # Start emulator in background
           emulator -avd Pixel_6_API_34 -no-snapshot -no-boot-anim -no-audio -no-window > emulator.log 2>&1 &
-          adb wait-for-device
 
+          # Wait for emulator TCP port 5554 to open
+          timeout=60
+          while ! nc -z localhost 5554; do
+            echo "Waiting for emulator TCP port 5554..."
+            sleep 3
+            timeout=$((timeout - 3))
+            if [ $timeout -le 0 ]; then
+              echo "ERROR: Emulator TCP port 5554 did not open in time"
+              cat emulator.log
+              exit 1
+            fi
+          done
+
+          echo "Emulator TCP port is open, waiting for adb device..."
+
+          # Wait for adb device
+          timeout=60
+          while ! adb devices | grep emulator-5554; do
+            echo "Waiting for adb device emulator-5554..."
+            sleep 3
+            timeout=$((timeout - 3))
+            if [ $timeout -le 0 ]; then
+              echo "ERROR: adb device emulator-5554 not found in time"
+              cat emulator.log
+              exit 1
+            fi
+          done
+
+          # Wait for emulator boot complete
           echo "Waiting for emulator to finish booting..."
           boot_completed=""
           timeout=60
           while [ "$boot_completed" != "1" ] && [ $timeout -gt 0 ]; do
             sleep 5
-            boot_completed=$(adb shell getprop sys.boot_completed | tr -d '\\r')
+            boot_completed=$(adb -s emulator-5554 shell getprop sys.boot_completed | tr -d '\\r')
             echo "Boot completed? $boot_completed"
             timeout=$((timeout - 5))
           done
@@ -50,13 +79,15 @@ pipeline {
             cat emulator.log
             exit 1
           fi
+
+          echo "Emulator ready!"
         '''
 
         echo "Generating Baseline Profile..."
         sh './gradlew --no-daemon generateBaselineProfileFull'
 
         echo "Killing emulator..."
-        sh 'adb emu kill'
+        sh 'adb -s emulator-5554 emu kill'
       }
     }
 
