@@ -13,7 +13,7 @@ pipeline {
     choice(name: 'ANDROID_TYPE', choices: ['APK', 'AAB'], description: 'Build output type')
     booleanParam(name: 'GENERATE_BASELINE_PROFILE', defaultValue: false, description: 'Generate Baseline Profile?')
     string(name: 'RELEASE_NOTES', defaultValue: 'Release notes here', description: 'Release notes text')
-    string(name: 'FIREBASE_GROUPS', defaultValue: 'beta-testers', description: 'Firebase distribution groups')
+    string(name: 'FIREBASE_GROUPS', defaultValue: 'internal-testers', description: 'Firebase distribution groups')
   }
 
   stages {
