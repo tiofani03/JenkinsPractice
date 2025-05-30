@@ -28,13 +28,11 @@ pipeline {
     }
 
     stage('Baseline Profile') {
-      when {
-        expression { params.GENERATE_BASELINE_PROFILE }
-      }
+      when { expression { params.GENERATE_BASELINE_PROFILE } }
       steps {
         echo "Starting Android emulator for baseline profile..."
         sh '''
-          nohup emulator -avd Pixel_6_API_34 -no-snapshot -no-boot-anim -no-audio -no-window > emulator.log 2>&1 &
+          emulator -avd Pixel_6_API_34 -no-snapshot -no-boot-anim -no-audio -no-window > emulator.log 2>&1 &
           adb wait-for-device
 
           echo "Waiting for emulator to finish booting..."
@@ -42,7 +40,7 @@ pipeline {
           timeout=60
           while [ "$boot_completed" != "1" ] && [ $timeout -gt 0 ]; do
             sleep 5
-            boot_completed=$(adb shell getprop sys.boot_completed | tr -d '\r')
+            boot_completed=$(adb shell getprop sys.boot_completed | tr -d '\\r')
             echo "Boot completed? $boot_completed"
             timeout=$((timeout - 5))
           done
@@ -55,7 +53,7 @@ pipeline {
         '''
 
         echo "Generating Baseline Profile..."
-        sh './gradlew --daemon generateBaselineProfileFull'
+        sh './gradlew --no-daemon generateBaselineProfileFull'
 
         echo "Killing emulator..."
         sh 'adb emu kill'
