@@ -19,7 +19,7 @@ pipeline {
   stages {
     stage('Setup') {
       steps {
-        echo "Setup environment"
+        echo "Setting up environment"
         sh '''
           echo "sdk.dir=$ANDROID_HOME" > local.properties
           chmod +x ./gradlew
@@ -32,21 +32,33 @@ pipeline {
         expression { params.GENERATE_BASELINE_PROFILE }
       }
       steps {
-        echo "Starting emulator..."
+        echo "Starting Android emulator for baseline profile..."
         sh '''
           nohup emulator -avd Pixel_6_API_34 -no-snapshot -no-boot-anim -no-audio -no-window > emulator.log 2>&1 &
           adb wait-for-device
-          echo "Waiting for boot completion..."
+
+          echo "Waiting for emulator to finish booting..."
           boot_completed=""
-          until [ "$boot_completed" = "1" ]; do
+          timeout=60
+          while [ "$boot_completed" != "1" ] && [ $timeout -gt 0 ]; do
             sleep 5
             boot_completed=$(adb shell getprop sys.boot_completed | tr -d '\r')
             echo "Boot completed? $boot_completed"
+            timeout=$((timeout - 5))
           done
+
+          if [ "$boot_completed" != "1" ]; then
+            echo "ERROR: Emulator failed to boot in time"
+            cat emulator.log
+            exit 1
+          fi
         '''
 
         echo "Generating Baseline Profile..."
         sh './gradlew --daemon generateBaselineProfileFull'
+
+        echo "Killing emulator..."
+        sh 'adb emu kill'
       }
     }
 
@@ -100,6 +112,14 @@ pipeline {
           """
         }
       }
+    }
+  }
+
+  post {
+    always {
+      echo "Cleaning up emulator processes (if any)..."
+      sh 'adb emu kill || true'
+      sh 'pkill -f "emulator" || true'
     }
   }
 }
