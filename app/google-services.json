@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1019167636442",
+    "project_id": "poke-data-e476c",
+    "storage_bucket": "poke-data-e476c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019167636442:android:42d9bbeefb3e9e75a61ee3",
+        "android_client_info": {
+          "package_name": "id.tiooooo.pokedata"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZEyjiooole6A5rN-x9WCIWW8ivxdw8LY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019167636442:android:fb222c31dce82a27a61ee3",
+        "android_client_info": {
+          "package_name": "id.tiooooo.testbaseline"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZEyjiooole6A5rN-x9WCIWW8ivxdw8LY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
